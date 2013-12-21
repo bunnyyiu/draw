@@ -3,7 +3,7 @@ tool.maxDistance = 45;
 
 
 // Initialise Socket.io
-var socket = io.connect('/');
+var socket = io.connect('/' + "ROOM_ID");
 
 // Random User ID
 // Used when sending data

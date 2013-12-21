@@ -6,7 +6,9 @@ html
         script(src='/socket.io/socket.io.js')
         script(src='/javascripts/lib/zepto.js')
         script(src='/javascripts/lib/paper.js')
-        script(src='/javascripts/canvas.js', type="text/paperscript", canvas="myCanvas")
+        script.
+          var roomID = "!{roomID}";
+       <script src="/room/!{roomID}/canvas.js" type="text/paperscript" canvas="myCanvas"></script>
     body
     div(id="controls")
         div(id="userCountWrapper", style="opacity:0") artists:
