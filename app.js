@@ -24,7 +24,7 @@ var createRoom = function (room) {
   var active_connections = 0;
   var newRoom = io.of('/' + room);
   newRoom.on('connection', function (socket) {
-
+    console.log('client connected room ' + room);
     active_connections++;
 
     newRoom.emit('user:connect', active_connections);
@@ -32,9 +32,10 @@ var createRoom = function (room) {
     socket.on('disconnect', function () {
       active_connections--;
       newRoom.emit('user:disconnect', active_connections);
-      //if (active_connections === 0) {
-      //  newRoom.close();
-      //}
+      if (active_connections === 0) {
+        newRoom.removeAllListeners();
+        delete io.namespaces[room];
+      }
     });
 
     // EVENT: User stops drawing something
@@ -73,14 +74,11 @@ app.configure('production', function () {
 });
 
 // ROUTES
-//app.get('/', function (req, res) {
-//  res.render('index', {
-//    title: 'title'
-//  });
-//});
+app.get('/', function (req, resp) {
+  resp.json({namespaces: Object.keys(io.namespaces)});
+});
 
 app.get('/room/:roomID', function (req, resp) {
-  console.log(req.params.roomID);
   var roomID = req.params.roomID;
   resp.render('index', {
     title: 'Room ' + roomID,
@@ -89,7 +87,6 @@ app.get('/room/:roomID', function (req, resp) {
 });
 
 app.get('/room/:roomID/canvas.js', function (req, resp) {
-  console.log(req.params.roomID);
   require('fs').readFile('./public/javascripts/canvas.js', function (err, data) {
     var dataToSend = data.toString().replace('ROOM_ID', req.params.roomID);
     resp.send(dataToSend);
@@ -97,8 +94,8 @@ app.get('/room/:roomID/canvas.js', function (req, resp) {
 });
 
 app.post('/room', function (req, resp) {
-  console.log('room');
   var newRoomId = uuid.v4();
   createRoom(newRoomId);
+  console.log('created room ',newRoomId);
   resp.json({roomID: newRoomId});
 });
