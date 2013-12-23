@@ -96,6 +96,6 @@ app.get('/room/:roomID/canvas.js', function (req, resp) {
 app.post('/room', function (req, resp) {
   var newRoomId = uuid.v4();
   createRoom(newRoomId);
-  console.log('created room ',newRoomId);
+  console.log('created room ', newRoomId);
   resp.json({roomID: newRoomId});
 });
